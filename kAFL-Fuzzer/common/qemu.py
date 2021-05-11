@@ -69,10 +69,18 @@ class qemu:
         self.cmd = self.config.config_values['QEMU_KAFL_LOCATION']
 
         # TODO: list append should work better than string concatenation, especially for str.replace() and later popen()
-        self.cmd += " -enable-kvm" \
-                    " -serial file:" + self.serial_logfile + \
+                    #" -device virtio-serial" + \
+                    #" -device virtconsole,chardev=c1" + \
+                    #" -serial file:" + self.serial_logfile + \
+                    #" -s -S" + \
+        self.cmd += \
+                    " -enable-kvm" + \
                     " -m " + str(config.argument_values['mem']) + \
-                    " -net none" \
+                    " -nodefaults " + \
+                    " -device virtio-serial" + \
+                    " -device virtconsole,chardev=c1" + \
+                    " -device isa-serial,chardev=c1" + \
+                    " -chardev file,id=c1,mux=on,path=" + self.serial_logfile + \
                     " -chardev socket,server,nowait,path=" + self.control_filename + \
                     ",id=nyx_socket" \
                     " -device nyx,chardev=nyx_socket" + \
@@ -107,6 +115,7 @@ class qemu:
 
         if self.debug_mode:
             #self.cmd += " -d kafl -D " + self.qemu_trace_log
+            self.cmd += " -d trace:guest_cpu\*,trace:\* -D " + self.qemu_trace_log
             pass
 
         self.cmd += " -no-reboot"
@@ -127,14 +136,14 @@ class qemu:
         # Lauch either as VM snapshot, direct kernel/initrd boot, or -bios boot
         if self.config.argument_values['vm_image']:
             self.cmd += " -drive file=" + self.config.argument_values['vm_image']
-        elif self.config.argument_values['kernel']:
+            #self.cmd += " -drive id=drive0,if=virtio,file=" + self.config.argument_values['vm_image']
+        if self.config.argument_values['kernel']:
             self.cmd += " -kernel " + self.config.argument_values['kernel']
+            self.cmd += " -append BOOTPARAM "
             if self.config.argument_values['initrd']:
-                self.cmd += " -initrd " + self.config.argument_values['initrd'] + " -append BOOTPARAM "
-        elif self.config.argument_values['bios']:
+                self.cmd += " -initrd " + self.config.argument_values['initrd'] 
+        if self.config.argument_values['bios']:
             self.cmd += " -bios " + self.config.argument_values['bios']
-        else:
-            assert(False), "Must supply either -bios or -kernel or -vm_image option"
 
         if self.config.argument_values["macOS"]:
             self.cmd = self.cmd.replace("-nographic -net none",
@@ -166,7 +175,8 @@ class qemu:
         c = 0
         for i in self.cmd:
             if i == "BOOTPARAM":
-                self.cmd[c] = "nokaslr oops=panic nopti mitigations=off console=ttyS0"
+                #self.cmd[c] = "earlyprintk=ttyS0 console=ttyS0 root=/dev/vda1 rw nokaslr tdx_wlist_devids=pci:0x8086:0x29c0,acpi:PNP0501 mitigations=off mce=off"
+                self.cmd[c] = "earlyprintk=ttyS0 console=hvc0 init=/sbin/init root=/dev/vda1 rw nokaslr force_tdx_guest tdx_wlist_devids=pci:0x8086:0x29c0,acpi:PNP0501 mitigations=off mce=off"
                 break
             c += 1
 
@@ -270,11 +280,13 @@ class qemu:
         else:
             logger.info("%s Launching virtual machine..." % self)
 
+        qemu_env = os.environ.copy()
+        qemu_env["QEMU_BIOS_IN_RAM"] = "1"
 
         # Launch Qemu. stderr to stdout, stdout is logged on VM exit
         # os.setpgrp() prevents signals from being propagated to Qemu, instead allowing an
         # organized shutdown via async_exit()
-        self.process = subprocess.Popen(self.cmd,
+        self.process = subprocess.Popen(self.cmd, env=qemu_env,
                 preexec_fn=os.setpgrp,
                 stdin=subprocess.DEVNULL)
                 # TODO: shutdown() fails to capture libxdc fprintf() - why?
@@ -522,6 +534,7 @@ class qemu:
 
         #if len(payload) > self.payload_limit:
         #    payload = payload[:self.payload_limit]
+        #print_warning("set_payload(%d, %s)\n" % (len(payload), payload[:32]))
         try:
             struct.pack_into("=I", self.fs_shm, 0, len(payload))
             self.fs_shm.seek(4)

@@ -156,21 +156,21 @@ def add_args_fuzzer(parser):
 def add_args_qemu(parser):
 
     # BIOS/VM/Kernel load modes are exclusive, but we need at least one of them
-    xorarg = parser.add_mutually_exclusive_group(required=True)
+    #xorarg = parser.add_mutually_exclusive_group(required=True)
 
-    xorarg.add_argument('-vm_image', metavar='<QCow2 File>', required=False, action=FullPath, 
+    parser.add_argument('-vm_image', metavar='<QCow2 File>', required=False, action=FullPath, 
                         type=parse_is_file, help='path to the VM\'s disk image.')
     parser.add_argument('-sharedir', metavar='<dir>', required=False, action=FullPath,
                         type=parse_is_dir, help='path to the page buffer share directory.')
-    xorarg.add_argument('-vm_snapshot', metavar='<dir>', required=False, action=FullPath,
+    parser.add_argument('-vm_snapshot', metavar='<dir>', required=False, action=FullPath,
                         type=parse_is_dir, help='path to the VM\'s pre-snapshot directory.')
 
-    xorarg.add_argument('-kernel', metavar='<file>', required=False, action=FullPath, type=parse_is_file,
+    parser.add_argument('-kernel', metavar='<file>', required=False, action=FullPath, type=parse_is_file,
                         help='path to the Kernel image.')
     parser.add_argument('-initrd', metavar='<file>', required=False, action=FullPath, type=parse_is_file,
                         help='path to the initrd/initramfs file.')
 
-    xorarg.add_argument('-bios', metavar='<file>', required=False, action=FullPath, type=parse_is_file,
+    parser.add_argument('-bios', metavar='<file>', required=False, action=FullPath, type=parse_is_file,
                         help='path to the BIOS image.')
 
     parser.add_argument('-mem', metavar='<num>', help='size of virtual memory in MB (default: 256).',
