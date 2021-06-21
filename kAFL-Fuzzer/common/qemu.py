@@ -77,8 +77,6 @@ class qemu:
                     " -enable-kvm" + \
                     " -m " + str(config.argument_values['mem']) + \
                     " -nodefaults " + \
-                    " -device virtio-serial" + \
-                    " -device virtconsole,chardev=c1" + \
                     " -device isa-serial,chardev=c1" + \
                     " -chardev file,id=c1,mux=on,path=" + self.serial_logfile + \
                     " -chardev socket,server,nowait,path=" + self.control_filename + \
@@ -153,7 +151,7 @@ class qemu:
         else:
             #self.cmd += " -machine q35 " ## cannot do fast_snapshot
             self.cmd += " -machine kAFL64-v1"
-            self.cmd += " -cpu kAFL64-Hypervisor-v1,+vmx"
+            self.cmd += " -cpu kAFL64-Hypervisor-v1,+vmx -smp 1"
             #self.cmd += " -cpu kvm64-v1" #,+vmx
 
         if not self.config.argument_values['no_fast_reload']:
@@ -175,8 +173,11 @@ class qemu:
         c = 0
         for i in self.cmd:
             if i == "BOOTPARAM":
-                #self.cmd[c] = "earlyprintk=ttyS0 console=ttyS0 root=/dev/vda1 rw nokaslr tdx_wlist_devids=pci:0x8086:0x29c0,acpi:PNP0501 mitigations=off mce=off"
-                self.cmd[c] = "earlyprintk=ttyS0 console=hvc0 init=/sbin/init root=/dev/vda1 rw nokaslr force_tdx_guest tdx_wlist_devids=pci:0x8086:0x29c0,acpi:PNP0501 mitigations=off mce=off"
+                #self.cmd[c] = "earlyprintk=ttyS0 console=ttyS0 init=/sbin/init root=/dev/vda1 rw nokaslr force_tdx_guest tdx_wlist_devids=pci:0x8086:0x29c0,acpi:PNP0501 mitigations=off mce=off"
+                if self.debug_mode:
+                    self.cmd[c] = "init=/sbin/init root=/dev/vda1 rw nokaslr hprintf=7 initcall_debug force_tdx_guest tdx_wlist_devids=pci:0x8086:0x29c0,acpi:PNP0501 mitigations=off mce=off"
+                else:
+                    self.cmd[c] = "init=/sbin/init root=/dev/vda1 rw nokaslr lpj=300 kasan.fault=report kasan.stacktrace=off hprintf=2 force_tdx_guest tdx_wlist_devids=pci:0x8086:0x29c0,acpi:PNP0501 mitigations=off mce=off"
                 break
             c += 1
 
