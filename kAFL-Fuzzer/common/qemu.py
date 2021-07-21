@@ -35,12 +35,13 @@ class qemu:
         self.ijonmap_size = 0x1000 # quick fix - bitmaps are not processed!
         self.bitmap_size = config.config_values['BITMAP_SHM_SIZE']
         self.payload_size = config.config_values['PAYLOAD_SHM_SIZE']
-        self.payload_limit = config.config_values['PAYLOAD_SHM_SIZE'] - 5
+        self.payload_limit = config.config_values['PAYLOAD_SHM_SIZE'] - 8
         self.config = config
         self.pid = pid
         self.alt_bitmap = bytearray(self.bitmap_size)
         self.alt_edges = 0
         self.bb_seen = 0
+        self.agent_flags = 0
 
         self.process = None
         self.control = None
@@ -528,6 +529,9 @@ class qemu:
         self.qemu_aux_buffer.set_trace_mode(enable)
 
 
+    def set_agent_flags(self, value):
+        self.agent_flags = value
+
     def set_payload(self, payload):
         # Ensure the payload fits into SHM. Caller has to cut off since they also report findings.
         # actual payload is limited to payload_size - sizeof(uint32) - sizeof(uint8)
@@ -537,8 +541,8 @@ class qemu:
         #    payload = payload[:self.payload_limit]
         #print_warning("set_payload(%d, %s)\n" % (len(payload), payload[:32]))
         try:
-            struct.pack_into("=I", self.fs_shm, 0, len(payload))
-            self.fs_shm.seek(4)
+            struct.pack_into("=II", self.fs_shm, 0, self.agent_flags, len(payload))
+            self.fs_shm.seek(8)
             self.fs_shm.write(payload)
             #self.fs_shm.flush()
         except ValueError:

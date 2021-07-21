@@ -79,7 +79,7 @@ class WorkerTask:
         self.logic = FuzzingStateLogic(self, self.config)
         self.conn = connection
         self.work_dir = self.config.argument_values['work_dir']
-        self.payload_size_limit = config.config_values['PAYLOAD_SHM_SIZE'] - 5
+        self.payload_size_limit = config.config_values['PAYLOAD_SHM_SIZE'] - 8
         self.t_hard = config.argument_values['timeout']
         self.t_soft = config.argument_values['t_soft']
         self.t_check = config.argument_values['t_check']
