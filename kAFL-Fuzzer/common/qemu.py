@@ -78,7 +78,11 @@ class qemu:
                     " -enable-kvm" + \
                     " -m " + str(config.argument_values['mem']) + \
                     " -nodefaults " + \
-                    " -device isa-serial,chardev=c1" + \
+                    " -netdev user,id=mynet0" \
+                    " -device virtio-net,netdev=mynet0" + \
+                    " -device virtio-serial" + \
+                    " -device virtconsole,chardev=c1" + \
+                    " -virtfs local,path=/tmp/kafl,mount_tag=tmp,security_model=mapped-file" + \
                     " -chardev file,id=c1,mux=on,path=" + self.serial_logfile + \
                     " -chardev socket,server,nowait,path=" + self.control_filename + \
                     ",id=nyx_socket" \
