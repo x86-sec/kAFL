@@ -42,6 +42,7 @@ def worker_loader(pid):
     # sys.stdout = open("worker_%d.out"%pid, "w")
     config = FuzzerConfiguration()
 
+    #psutil.Process().cpu_affinity([2*pid + config.argument_values["cpu_offset"]])
     psutil.Process().cpu_affinity([pid + config.argument_values["cpu_offset"]])
 
     connection = ClientConnection(pid, config)
