@@ -179,10 +179,11 @@ class qemu:
         for i in self.cmd:
             if i == "BOOTPARAM":
                 #self.cmd[c] = "earlyprintk=ttyS0 console=ttyS0 init=/sbin/init root=/dev/vda1 rw nokaslr force_tdx_guest tdx_wlist_devids=pci:0x8086:0x29c0,acpi:PNP0501 mitigations=off mce=off"
+                extra_params = os.environ.get("KERNEL_BOOT_PARAMS", "")
                 if self.debug_mode:
-                    self.cmd[c] = "init=/sbin/init root=/dev/vda1 rw nokaslr hprintf=7 initcall_debug force_tdx_guest tdx_wlist_devids=pci:0x8086:0x29c0,acpi:PNP0501 mitigations=off mce=off"
+                    self.cmd[c] = "init=/sbin/init root=/dev/vda1 rw nokaslr hprintf=7 initcall_debug force_tdx_guest tdx_wlist_devids=pci:0x8086:0x29c0,acpi:PNP0501 mitigations=off mce=off " + extra_params
                 else:
-                    self.cmd[c] = "init=/sbin/init root=/dev/vda1 rw nokaslr lpj=300 kasan.fault=report kasan.stacktrace=off hprintf=2 force_tdx_guest tdx_wlist_devids=pci:0x8086:0x29c0,acpi:PNP0501 mitigations=off mce=off"
+                    self.cmd[c] = "init=/sbin/init root=/dev/vda1 rw nokaslr lpj=300 kasan.fault=report kasan.stacktrace=off hprintf=2 force_tdx_guest tdx_wlist_devids=pci:0x8086:0x29c0,acpi:PNP0501 mitigations=off mce=off " + extra_params
                 break
             c += 1
 
