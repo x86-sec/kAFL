@@ -39,17 +39,17 @@ manifest:
         - host_kernel
 
     - name: qemu
-      repo-path: il-steffen/QEMU-Nyx
-      remote: github
-      revision: kafl_stable
+      repo-path: research.security.fuzzing.nyx.qemu
+      remote: sandbox
+      revision: qemu-nyx-4.2.0-tdx-5
       path: kafl/QEMU
       groups:
         - qemu
 
     - name: libxdc
-      repo-path:  il-steffen/libxdc
-      remote: github
-      revision: kafl_stable
+      repo-path: research.security.fuzzing.nyx.libxdc
+      remote: sandbox
+      revision: upstream-tdx-3
       path: kafl/libxdc
       groups:
         - qemu
