@@ -41,7 +41,7 @@ manifest:
     - name: qemu
       repo-path: research.security.fuzzing.nyx.qemu
       remote: sandbox
-      revision: qemu-nyx-4.2.0-tdx-5
+      revision: staging-upstream-tdx
       path: kafl/QEMU
       groups:
         - qemu
@@ -49,7 +49,7 @@ manifest:
     - name: libxdc
       repo-path: research.security.fuzzing.nyx.libxdc
       remote: sandbox
-      revision: upstream-tdx-3
+      revision: tdx
       path: kafl/libxdc
       groups:
         - qemu
