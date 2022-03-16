@@ -18,8 +18,10 @@ if ! west list zephyr > /dev/null 2>&1; then
    fi
 fi
 
-KAFL_ROOT=$(west topdir)
+KAFL_ROOT=$(west list -f {abspath} kafl)
+
 echo KAFL_ROOT=$KAFL_ROOT
+echo QEMU_ROOT=$(west list -f {abspath} kafl)
 echo QEMU_ROOT=$(west list -f {abspath} qemu)
 echo LIBXDC_ROOT=$(west list -f {abspath} libxdc)
 echo CAPSTONE_ROOT=$(west list -f {abspath} capstone)
