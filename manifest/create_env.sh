@@ -22,11 +22,11 @@ BKC_ROOT=$(west topdir)
 KAFL_ROOT=$(west list -f {abspath} kafl)
 
 echo KAFL_ROOT=$KAFL_ROOT
-echo QEMU_ROOT=$(west list -f {abspath} kafl)
 echo QEMU_ROOT=$(west list -f {abspath} qemu)
 echo LIBXDC_ROOT=$(west list -f {abspath} libxdc)
 echo CAPSTONE_ROOT=$(west list -f {abspath} capstone)
 echo RADAMSA_ROOT=$(west list -f {abspath} radamsa)
+echo LINUX_ROOT=$(west list -f {abspath} kvm)
 
 # default kAFL workdir + config
 echo KAFL_CONFIG_FILE=$KAFL_ROOT/kafl.yaml
