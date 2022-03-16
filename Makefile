@@ -11,8 +11,8 @@ else
 	pipenv shell
 endif
 
-.env: .west .pipenv scripts/create_env.sh
-	pipenv run bash ./scripts/create_env.sh > .env
+.env: .west .pipenv manifest/create_env.sh
+	pipenv run bash ./manifest/create_env.sh > .env
 
 .west: | .pipenv
 	pipenv run west init -l manifest
