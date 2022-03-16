@@ -18,9 +18,8 @@ manifest:
       url-base: https://gitlab.com
 
   self:
-    path: kafl
-    west-commands: scripts/west_commands.yml
-    import: .submanifests
+    path: .
+    import: manifest/submanifests
 
   projects:
 
