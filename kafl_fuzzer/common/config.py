@@ -19,7 +19,13 @@ from kafl_fuzzer.common.logger import logger
 
 class FullPath(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
-        setattr(namespace, self.dest, os.path.abspath(os.path.expanduser(values)))
+        if isinstance(values, list):
+            dests = []
+            for v in values:
+                dests.append(os.path.abspath(os.path.expanduser(v)))
+            setattr(namespace, self.dest, dests)
+        else:
+            setattr(namespace, self.dest, os.path.abspath(os.path.expanduser(values)))
 
 
 def create_dir(dirname):
@@ -164,6 +170,8 @@ def add_args_qemu(parser):
                         type=parse_is_dir, help='path to VM pre-snapshot directory.')
     parser.add_argument('--bios', dest='qemu_bios', metavar='<file>', required=False, action=FullPath, type=parse_is_file,
                         help='path to the BIOS image.')
+    parser.add_argument('--flash', dest='qemu_flash', nargs=2, metavar=('<code>', '<vars>'), required=False, action=FullPath, type=parse_is_file,
+                        help='path to the BIOS code and EFI variables fd images.')
     parser.add_argument('--kernel', dest='qemu_kernel', metavar='<file>', required=False, action=FullPath,
                         type=parse_is_file, help='path to the Kernel image.')
     parser.add_argument('--initrd', dest='qemu_initrd', metavar='<file>', required=False, action=FullPath, type=parse_is_file,
