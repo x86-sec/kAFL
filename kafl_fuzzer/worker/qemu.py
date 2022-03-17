@@ -61,6 +61,7 @@ class qemu:
         self.serial_logfile = work_dir + "/serial_%02d.log" % self.pid
         self.hprintf_log = self.config.log_hprintf or self.config.log_crashes
         self.hprintf_logfile = work_dir + "/hprintf_%02d.log" % self.pid
+        self.qemu_debug_log = work_dir + "/qemu_debug_%02d.log" % self.pid
 
         self.redqueen_workdir = RedqueenWorkdir(self.pid, config)
         self.redqueen_workdir.init_dir()
@@ -95,6 +96,17 @@ class qemu:
 
         self.cmd = [_f for _f in self.cmd.split(" ") if _f]
 
+        if self.debug_mode:
+            # Isa debug port (harness writes)
+            self.cmd.extend(["-global", "isa-debugcon.iobase=0x402"])
+            self.cmd.extend(["-debugcon", "file:" + self.qemu_debug_log])
+
+        if not self.config.argument_values['g']:
+            self.cmd.extend(["-nographic"])
+
+        if self.config.argument_values['C']:
+            self.cmd.extend(["-boot", "menu=on"])
+
         if self.config.qemu_serial:
             # config.qemu_serial should just contain the device(s) to emulate, with id=kafl_serial
             self.cmd.extend(self.config.qemu_serial.split(" "))
@@ -103,8 +115,8 @@ class qemu:
         self.cmd.extend(["-m", str(config.qemu_memory)])
 
         if self.debug_mode and self.config.log:
-            #self.cmd.extend("-trace", "events=/tmp/events"])
-            #self.cmd.extend("-d", "kafl", "-D", "self.qemu_trace_log"])
+            #self.cmd.extend(["-trace", "events=/tmp/events"])
+            #self.cmd.extend(["-d", "kafl", "-D", "self.qemu_trace_log"])
             pass
 
         if self.config.gdbserver:
@@ -119,6 +131,13 @@ class qemu:
                 self.cmd.extend(["-initrd", self.config.qemu_initrd])
         if self.config.qemu_bios:
             self.cmd.extend(["-bios", self.config.qemu_bios])
+        if self.config.qemu_flash:
+            self.cmd.extend(["-global", \
+                "driver=cfi.pflash01,property=secure,value=on"])
+            self.cmd.extend(["-drive", "if=pflash,format=raw,unit=0,file=" + \
+                self.config.qemu_flash[0] + ",readonly=on "])
+            self.cmd.extend(["-drive if=pflash,format=raw,unit=1,file=" + \
+                self.config.qemu_flash[1]])
 
         # Qemu -append option
         if self.config.qemu_append:
