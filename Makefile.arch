@@ -16,7 +16,7 @@ endif
 
 .west: | .pipenv .path
 	pipenv run west init -l manifest
-	pipenv run west update kafl # minimum install for manifest import!
+	pipenv run west update
 
 .pipenv:
 	sudo pacman -S python python-pip || true
