@@ -25,12 +25,13 @@ manifest:
   projects:
 
     - name: targets
-      repo-path: IntelLabs/kafl.targets
+      repo-path: x86-sec/kafl.targets
       remote: github
-      revision: master
+      revision: smm
       path: kafl/examples
-      groups:
-        - targets
+      import: manifest/west.yml
+#      groups:
+#        - targets
 
     - name: kvm
       repo-path: nyx-fuzz/KVM-Nyx
@@ -41,9 +42,9 @@ manifest:
         - host_kernel
 
     - name: qemu
-      repo-path: IntelLabs/kafl.qemu
+      repo-path: x86-sec/QEMU-Nyx
       remote: github
-      revision: kafl_stable
+      revision: smm
       path: kafl/nyx/qemu
       groups:
         - qemu
