@@ -26,8 +26,8 @@ manifest:
     # import all from kAFL
     - name: kafl
       remote: github
-      repo-path: IntelLabs/kAFL
-      revision: master
+      repo-path: x86-sec/kAFL
+      revision: smm
       import: manifest/west.yml
 
     # add more components / fuzzing targets here..
