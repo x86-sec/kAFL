@@ -25,7 +25,7 @@ manifest:
   projects:
 
     - name: targets
-      repo-path: x86-sec/kafl.targets
+      repo-path: x86-sec/kafl.targets.smm
       remote: github
       revision: smm
       path: kafl/examples
